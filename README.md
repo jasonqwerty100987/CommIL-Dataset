@@ -63,8 +63,8 @@ Masks are generated based on the comm\_sim.json files and they are loaded as a P
 ```python
 from generate_masks import generate_mask
 loaded_mask = generate_mask(comm_sim_folder_name)
-mask = loaded_mask[scenario_folder_name][time_stamp][ego_CAV_Number][peer_CAV_Number]
+duration, mask = loaded_mask[scenario_folder_name][time_stamp][ego_CAV_Number][peer_CAV_Number]
 ```
 The comm_sim_folder_name is the folder name of the confige folders (e.g., "1e+02_1e+02_1e-01"), and the scenario_folder_name is the folder name of a scenario folder (e.g., 2021_08_16_22_26_54). 
 
-The mask is a 1D numpy boolean array with values to indicate whether to keep the data at a given index and the size of the mask is the same as the feature size. The values of a mask at indices correpsonsed to dropped packets have a value 0.
+The mask is a 1D numpy boolean array with values to indicate whether to keep the data at a given index and the size of the mask is the same as the feature size. The values of a mask at indices correpsonsed to dropped packets have a value 0. The duration is a float number representing the delay of when the ego CAV can receive all the shared features.
