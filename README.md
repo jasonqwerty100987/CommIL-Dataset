@@ -63,7 +63,7 @@ Masks are generated based on the comm\_sim.json files and they are loaded as a P
 ```python
 from generate_masks import generate_mask
 loaded_mask = generate_mask(comm_sim_folder_name)
-mask = loaded_mask[scenario_folder_name][time_stamp][CAV_Number][peer_CAV_Number]
+mask = loaded_mask[scenario_folder_name][time_stamp][ego_CAV_Number][peer_CAV_Number]
 ```
 The comm_sim_folder_name is the folder name of the confige folders (e.g., "1e+02_1e+02_1e-01"), and the scenario_folder_name is the folder name of a scenario folder (e.g., 2021_08_16_22_26_54). 
 
