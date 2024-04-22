@@ -67,4 +67,4 @@ mask = loaded_mask[scenario_folder_name][time_stamp][ego_CAV_Number][peer_CAV_Nu
 ```
 The comm_sim_folder_name is the folder name of the confige folders (e.g., "1e+02_1e+02_1e-01"), and the scenario_folder_name is the folder name of a scenario folder (e.g., 2021_08_16_22_26_54). 
 
-The mask is a 1D numpy boolean array to indicate whether to keep the data at the index and the size of the mask is the same as the feature size. The value of the mask is determined by which packet is dropped during the transmission process, and the value in the mask at indices correpsonse to the dropped packets will have a value 0.
+The mask is a 1D numpy boolean array with values to indicate whether to keep the data at a given index and the size of the mask is the same as the feature size. The values of a mask at indices correpsonsed to dropped packets have a value 0.
