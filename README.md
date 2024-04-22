@@ -37,7 +37,7 @@ The name of sub-directories is in the following format {feature_size}\_{payload_
 To account for communication overhead, the dataset will also return the time difference between when the first packet been sent and when the last packet is recieved. By default, the propagation delay is calculated based on the [Log Distance Propagation Delay Model](https://www.nsnam.org/docs/models/html/propagation.html) and the waypoints of CAVs. The time difference will be used to retrive the coresponding groundtruth after the delay.
 
 # Data Format
-In the comm\_sim folders, the sub-directories represent what are the configurations used for the communication simulation. The sub-sub-directories are scenario folders. Inside the scenario folders, there is a file called comm\_sim.json. This JSON file records all the transmitted and received packets for each of the CAVs in a given scenario . The records include the packet number and their trainmitted/recieved time and they will be used to construct masks to drop information from shared features. The basic structure of a comm\_sim.json file is as following:
+In the comm\_sim folders, the sub-directories represent what are the configurations used for the communication simulation. The sub-sub-directories are scenario folders. Inside each of the scenario folders, there is a file called comm\_sim.json. This JSON file records all the transmitted and received packets for each of the CAVs in a given scenario . The records include the packet number and their trainmitted/recieved time and they will be used to construct masks to drop information from shared features. The basic structure of a comm\_sim.json file is as following:
 ```bash
 |{time_stamp 1}
 | --{CAV_Number 1}
@@ -58,3 +58,13 @@ In the comm\_sim folders, the sub-directories represent what are the configurati
 |{time_stamp 2}
 |....
 ```
+# Mask Format and Usage
+Masks are generated based on the comm\_sim.json files and they are loaded as a Python dictionary object. You can access the mask through
+```python
+from generate_masks import generate_mask
+loaded_mask = generate_mask(comm_sim_folder_name)
+mask = loaded_mask[scenario_folder_name][time_stamp][CAV_Number][peer_CAV_Number]
+```
+The comm_sim_folder_name is the folder name of the confige folders (e.g., "1e+02_1e+02_1e-01"), and the scenario_folder_name is the folder name of a scenario folder (e.g., 2021_08_16_22_26_54). 
+
+The mask is a 1D numpy boolean array to indicate whether to keep the data at the index and the size of the mask is the same as the feature size. The value of the mask is determined by which packet is dropped during the transmission process, and the value in the mask at indices correpsonse to the dropped packets will have a value 0.
