@@ -35,3 +35,26 @@ The name of sub-directories is in the following format {feature_size}\_{payload_
 
 # Communication Overhead
 To account for communication overhead, the dataset will also return the time difference between when the first packet been sent and when the last packet is recieved. By default, the propagation delay is calculated based on the [Log Distance Propagation Delay Model](https://www.nsnam.org/docs/models/html/propagation.html) and the waypoints of CAVs. The time difference will be used to retrive the coresponding groundtruth after the delay.
+
+# Data Format
+In the comm\_sim folders, the sub-directories represent what are the configurations used for the communication simulation. The sub-sub-directories are scenario folders. Inside the scenario folders, there is a file called comm\_sim.json. This JSON file records all the transmitted and received packets for each of the CAVs in a given scenario . The records include the packet number and their trainmitted/recieved time and they will be used to construct masks to drop information from shared features. The basic structure of a comm\_sim.json file is as following:
+```bash
+|{time_stamp 1}
+| --{CAV_Number 1}
+|     ----{received}
+|         ----[time, packet_number]
+|         ----[time, packet_number]
+|         ----....
+|     ----{transmitted}
+|         ----[time, packet_number]
+|         ----[time, packet_number]
+|         ----....
+| --{CAV_Number 2}
+|     ----{received}
+|         ----....
+|     ----{transmitted}
+|         ----....
+| --....
+|{time_stamp 2}
+|....
+```
