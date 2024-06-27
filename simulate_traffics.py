@@ -1,11 +1,3 @@
-# import os
-# os.system('cmd /k "./ns3 shell"')
-
-
-
-# ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
-# ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
-
 import os
 import json
 import tqdm
@@ -13,43 +5,6 @@ import tqdm
 DELTA_TIME = 0.05 # The time difference in second between two adjacent time stamp
 
 
-
-# def _parse_propagation_delay(model:str)->str:
-#     '''
-#     \param str model: the string representation of propagation delay.
-
-#     return str: the string representation of the propation delay in ns3.
-#     '''
-#     if model not in SUPPORTED_DELAY_MODEL:
-#         raise ValueError(f"Currently only support {', '.join(SUPPORTED_DELAY_MODEL.keys())} models, but {model} is given.")
-#     return SUPPORTED_DELAY_MODEL[model]
-
-# def _parse_propagation_loss(loss:str, para:dict)->str:
-#     '''
-#     \param str loss: the string representation of propagation loss.
-#            dict para: the parameters used to construct the parameters. The key is data type, value is a tuple. The first element is parameter name, the second element is parameter value. (name, value)
-
-#     return str: the string representation of the propation loss in ns3.
-#     '''
-#     if loss not in SUPPORTED_DELAY_LOSS:
-#         raise ValueError(f"Currently only support {', '.join(SUPPORTED_DELAY_LOSS.keys())} losses, but {loss} is given.")
-#     return SUPPORTED_DELAY_LOSS[loss], _parse_parameter(para)
-
-# def _parse_parameter(para:dict)->list:
-#     final_para = []
-
-#     for data_type in para:
-#         if data_type not in SUPPORTED_DATA_TYPE:
-#             raise ValueError(f"Unsupported data type, supported data types are {', '.join(SUPPORTED_DATA_TYPE.keys())}. But, {data_type} is given.")
-
-#         for para_name, para_value in para[data_type]:
-#             if type(para_value) == list:
-#                 para_value = SUPPORTED_DATA_TYPE[data_type](*para_value)
-#             else:
-#                 para_value = SUPPORTED_DATA_TYPE[data_type](para_value)
-#             final_para.extend((para_name, para_value))
-    
-#     return final_para
 
 
 
@@ -158,38 +113,24 @@ def _run_exp(root, total_size, packet_size, maxtime, folder, ns, skip = False):
                 result = simulate(nNodes = nNodes, payloads = packets, waypoints = waypoints, rate = rate, total_attempt=total_attempt, start_time = start_time, ns=ns, experiment_title=f"{total_size}_{packet_size}_{stamp}")
                 parsed_result = parse_results(result, index_to_name)
                 final_result[stamp] = parsed_result
-            
+
             save_results(os.path.join(folder, sub_dir_name), final_result, filename)
 
 
 def simulate(nNodes = 5,
     simStop = 100.,
     payloads = ["Data 1","Data 2","Data 3","Data 4","Data 5"],
-    locations = [],
-    debug = False,
-    propagation_delay = "ConstantSpeedDelay", phymode = "OfdmRate6MbpsBW10MHz", verbose = False, waypoints=[], rate = 1, total_attempt = 10, start_time = 0., parsing_fn = None, ns=None, experiment_title="Experiement"):
+    phymode = "OfdmRate6MbpsBW10MHz", verbose = False, waypoints=[], rate = 1, total_attempt = 10, start_time = 0., parsing_fn = None, ns=None, experiment_title="Experiement"):
     '''
     This is the method that construct scenarios based on given arguments, and return the information of interest.
-    \param int nNodes: nNodes decides how many node will be created in the simulation. 
+    \param int nNodes: nNodes decides how many node will be created in the simulation.
            float simStop: simStop decides the max time that the simulator will simulate the experiment. Unit in seconds.
            list payloads: paylodas is a list of strings. The strings will be sent to other node. The length of payloads should be the same as the nNodes.
-           list locations:  locations is a list of 3 floating point tuple (x,y,z). The x, y, and z defines the locations of the created nodes, 
+           list waypoints:  locations is a list of 3 floating point tuple (x,y,z). The x, y, and z defines the locations of the created nodes,
                             the assignment of the (x,y,z) tuples will be in the same order of their appearance in the location list.
     return dict: A dictionary with node ids as keys and their recieved message as values.
     '''
     assert len(payloads) == nNodes
-    
-    SUPPORTED_DELAY_MODEL = {"ConstantSpeedDelay":"ns3::ConstantSpeedPropagationDelayModel", "RandomDelay":"ns3::RandomPropagationDelayModel"}
-
-    SUPPORTED_DELAY_LOSS = {"Friis":"ns3::FriisPropagationLossModel", "Cost231":"ns3::Cost231PropagationLossModel",\
-                            "Fixed":"ns3::FixedRssLossModel", "ItuR1238":"ns3::ItuR1238PropagationLossModel",\
-                            "ItuR1411":"ns3::ItuR1411LosPropagationLossModel","ItuR1411N":"ns3::ItuR1411NlosOverRooftopPropagationLossModel",\
-                            "Jakes":"ns3::JakesPropagationLossModel", "Kun2600Mhz":"ns3::Kun2600MhzPropagationLossModel",\
-                            "LogDistance":"ns3::LogDistancePropagationLossModel", "Matrix":"ns3::MatrixPropagationLossModel",\
-                            "Nakagami":"ns3::NakagamiPropagationLossModel", "Okumura":"ns3::OkumuraHataPropagationLossModel",\
-                            "Random":"ns3::RandomPropagationLossModel", "Range":"ns3::RangePropagationLossModel",\
-                            "ThreeLogDistance":"ns3::ThreeLogDistancePropagationLossModel","TwoRayGround":"ns3::TwoRayGroundPropagationLossModel",\
-                            "HybridBuildings":"ns3::HybridBuildingsPropagationLossModel","OhBuildings":"ns3::OhBuildingsPropagationLossModel"}
 
     SUPPORTED_DATA_TYPE = {"Address":ns.core.AddressValue, "Boolean":ns.core.BooleanValue, "Box":ns.core.BoxValue, "Callback":ns.core.CallbackValue,\
                         "DataRate":ns.core.DataRateValue, "Double":ns.core.DoubleValue,\
@@ -203,7 +144,7 @@ def simulate(nNodes = 5,
                             "UanModesList":ns.core.UanModesListValue, "Uinteger":ns.core.UintegerValue, "Vector2DValue":ns.core.Vector2DValue, "Vector3DValue":ns.core.Vector3DValue,\
                             "WaypointValue":ns.core.WaypointValue, "WifiMode":ns.core.WifiModeValue, "Vector3D":ns.core.Vector3D, "Vector2D":ns.core.Vector2D,
                             "Waypoint":ns.mobility.Waypoint, "Seconds":ns.core.Seconds}
-    
+
     def _install_waypoint_mob(node, waypoints_list:list):
         mobility = ns.mobility.MobilityHelper()
         mobility.SetMobilityModel("ns3::WaypointMobilityModel")
@@ -217,11 +158,11 @@ def simulate(nNodes = 5,
             waypoint_value = SUPPORTED_DATA_TYPE['Waypoint'](time_stamp, waypoint_vector)
             node_mob.AddWaypoint(waypoint_value)
 
-    # Create drone nodes
+    # Create nodes
     nodes = ns.network.NodeContainer()
     nodes.Create(nNodes)
 
-    
+
 
     # Create V2V topology
     wifiPhy = ns.wifi.YansWifiPhyHelper()
@@ -233,7 +174,7 @@ def simulate(nNodes = 5,
     wifi80211p = ns.wave.Wifi80211pHelper.Default()
     if (verbose):
         wifi80211p.EnableLogComponents() # Turn on all Wifi 802.11p logging
-    
+
     wifi80211p.SetRemoteStationManager("ns3::ConstantRateWifiManager","DataMode", ns.core.StringValue(phymode), "ControlMode", ns.core.StringValue(phymode))
     devices = wifi80211p.Install(wifiPhy, wifi80211pMac, nodes)
     wifiPhy.EnablePcap ("wave-simple-80211p", devices)
@@ -266,31 +207,10 @@ def simulate(nNodes = 5,
     apps.Start(ns.core.Seconds(start_time))
     apps.Stop(ns.core.Seconds(simStop))
 
-    # for i in range(nNodes):
-    #     node = nodes.Get(i)
-    #     mob = node.GetObject["MobilityModel"]()
-    #     pos_vector=mob.GetPosition()
-    #     print(pos_vector.x, pos_vector.y, pos_vector.z)
-
     wifiPhy.EnablePcapAll(experiment_title)
-    # anim = ns.netanim.AnimationInterface(f"{experiment_title}.xml")
-    # for i in range(nNodes):
-    #     n = nodes.Get(i)
-    #     nDevice = n.GetNDevices()
-    #     for j in range(nDevice):
-    #         wifiNd = n.GetDevice(j)
-    #         if wifiNd:
-    #             wifiNd.GetPhy().TraceConnectWithoutContext("PhyRxBegin", ns.core.MakeCallback(ns.netanim.AnimationInterface.WifiPhyRxBeginTrace, anim))
-    #             wifiNd.GetPhy().TraceConnectWithoutContext("PhyTxBegin", ns.core.MakeCallback(ns.netanim.AnimationInterface.WifiPhyTxBeginTrace, anim))
-          
 
-    # print(f"animation file is saved to {experiment_title}.xml")
-    # traceHelper = ns.network.AsciiTraceHelper()
-    # wifiPhy.EnableAsciiAll(traceHelper.CreateFileStream("Fanet3D.tr"))
     ns.core.Simulator.Stop(ns.core.Seconds(simStop))
-    # print("Start to run exp")
     ns.core.Simulator.Run()
-    # ns.core.Simulator.Destroy()
     result = {}
     for i in range(nNodes):
         app = apps.Get(i)
@@ -299,21 +219,11 @@ def simulate(nNodes = 5,
     parsed_result = {}
     for key in result:
         temp_list = list(result[key])
-        # print(temp_list)
         temp_list = [ele.decode(encoding="ascii") for ele in temp_list]
         parsed_result[key] = temp_list
-    # return parsed_result
     if parsing_fn is not None:
         parsed_result = parsing_fn(parsed_result)
     return parsed_result
-
-# def main(**kwargs):
-#     while True:
-#         option = input("C to continue, Q to exit").upper()
-#         if option=="C":
-#             print(exp_method(**kwargs))
-#         elif option == "Q":
-#             break
 
 def reading_dummy_data(filename, n_row = 5, select_index = [1,2,3,10], toString=True):
     import csv
@@ -332,11 +242,6 @@ def reading_dummy_data(filename, n_row = 5, select_index = [1,2,3,10], toString=
         result.append({})
         for key, index in zip(keys, select_index):
             result[-1][key] = row[index]
-    # for key in keys:
-    #     result[key] = []
-    #     for row in rows:
-    #         for i in select_index:
-    #             result[key].append(row[i])
     if toString:
         result = [json.dumps(ele) for ele in result]
     return result
@@ -351,36 +256,31 @@ class ProcessQueue():
         self.max_num_process = max_alive
         self.sleep_time = sleep_time
         self.alive = -1
-    
+
     def append_job(self, method, args):
         self.jobs.append((method, args))
-    
+
     def _start_job(self):
         if self.jobs:
             target, args = self.jobs.pop()
-            # print(f"starting jobs {args}")
             process_instance = multiprocessing.Process(target=target, args=args)
             process_instance.start()
             self.processes.append(process_instance)
-        
-    
-        
+
+
+
     def _monitor(self):
         new_process_list = []
         for process_instance in self.processes:
             if process_instance.is_alive():
-                # print(f"process {process_instance.pid} is still running")
                 new_process_list.append(process_instance)
-        
+
         new_process_pids = [ele.pid for ele in new_process_list]
         for process_instance in self.processes:
             process_pid = process_instance.pid
             if process_pid not in new_process_pids:
-                # print(f"closing process {process_pid}")
                 process_instance.join()
                 process_instance.close()
-                # print(f"process {process_pid} is closed")
-        
 
         self.processes = new_process_list
 
@@ -388,59 +288,45 @@ class ProcessQueue():
             self._start_job()
 
         self.alive = len(self.processes)
-        print(f"Currently {self.alive} process alive, {len(self.jobs)} jobs remaining", end='\r') 
+        print(f"Currently {self.alive} process alive, {len(self.jobs)} jobs remaining", end='\r')
         time.sleep(self.sleep_time)
 
     def start(self):
         print("started")
         while self.alive != 0:
             self._monitor()
-        
-        
+
+
 
 
 
 if __name__ == "__main__":
-    # import pprint
-    # payloads = reading_dummy_data('/home/cps-tingcong/Downloads/concentration.csv')
-    # size = len(payloads)
-    # # print(size)
-    # locations = [(0,10,0),(0,0,0), (0,30,0), (0,60,0), (0,100,0)]
-    # print(main(nNodes=size, payloads=payloads, locations=locations, simStop=10))
-    # print(_read_payloads_waypoints("/home/cps-tingcong/Downloads/opencood_test/test/2021_08_20_21_10_24"))
+    # Change the following directories to the OPV2V dataset directories
     train_root = "/home/cps-tingcong/Downloads/opencood_train/train"
     test_root = "/home/cps-tingcong/Downloads/opencood_test/test"
     valid_root = "/home/cps-tingcong/Downloads/opencood_validate/validate"
-    # total_size = 1e6 # unit in bytes
-    # packet_size = 8e3 # unit in bytes
-    maxtime = 0.1 # try to send all packets in maxtime second
-    roots = [train_root, test_root, valid_root]
-    # save_dir = f"/home/cps-tingcong/Downloads/opencood_test/comm_sim/{format(total_size, '.0e')}_{format(packet_size, '.0e')}_{format(maxtime, '.0e')}/"
-    
 
-    
+    maxtime = 0.1 # max retry time
+    roots = [train_root, test_root, valid_root]
+
     process_queue = ProcessQueue(max_alive=6, sleep_time=0.1)
 
+    # total_size unit in bytes
+    # packet_size unit in bytes
     total_sizes = [6e6, 4e6, 2e6, 1e6, 5e5, 1e5, 5e4, 1e4, 5e3, 1e3, 5e2, 1e2]
     packet_sizes = [1e6, 5e5, 1e5, 5e4, 1e4, 5e3, 1e3, 5e2, 1e2]
     total_sizes = [5e3, 1e3]
     packet_sizes = [1e3]
-    # args = []
+
     for total_size in total_sizes:
         for packet_size in packet_sizes:
             if total_size >= packet_size and total_size%packet_size == 0:
+                # Change the following dir to your local save directories
                 save_dir_train = f"/home/cps-tingcong/Downloads/opencood_train/comm_sim/{format(total_size, '.0e')}_{format(packet_size, '.0e')}_{format(maxtime, '.0e')}"
                 save_dir_test = f"/home/cps-tingcong/Downloads/opencood_test/comm_sim/{format(total_size, '.0e')}_{format(packet_size, '.0e')}_{format(maxtime, '.0e')}"
                 save_dir_valid = f"/home/cps-tingcong/Downloads/opencood_validate/comm_sim/{format(total_size, '.0e')}_{format(packet_size, '.0e')}_{format(maxtime, '.0e')}"
                 save_roots = [save_dir_train, save_dir_test, save_dir_valid]
                 for root, save_dir in zip(roots, save_roots):
                     process_queue.append_job(main, (root, total_size, packet_size, maxtime, save_dir))
-                    # args.append((root, total_size, packet_size, maxtime, save_dir))
-    
+
     process_queue.start()
-    # with multiprocessing.Pool(processes=6) as pool:
-    #     results = pool.starmap(main, args)
-    
-    # for result, config in zip(results, args):
-    #     print(result, config)
-    

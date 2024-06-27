@@ -1,6 +1,40 @@
 # CommIL-Dataset
 The official github for the CommIL V2V dataset
 
+# Data Generation
+Please compile the ns-3.38 project under the ns-allinone-3.38 folder with custom application implementation designed for V2V networks. The custom application implementation accepts custom packet content and send packets to the broadcast address. Thus, all vehicles wihtin a V2V network will recieve the broadcasted packets and record them for mask generation.
+
+The compile instuction is avilable at [NS3 website (click here)](https://www.nsnam.org/docs/tutorial/html/getting-started.html). Please enable pybinding and disable example and testing to avoid errors. 
+
+In order to import ns3 python binding into python scripts, you need to change the directory of your command line into the ns-3.38 folder and run
+'''bash
+/ns3 shell
+'''
+This will activate ns3 python binding and allowing python script that run by the command line to import ns.
+
+Step 1: Please change the path variable in generate_vehicle_traj.py to the directory of one of the training, testing, and testing dataset directory, and run 
+```python
+python generate_vehicle_traj.py
+```
+This will extract the waypoints from the OPV2V dataset.
+
+Step 2: Change the directories in the simulate_traffics.py.
+```python
+train_root = "/path/to/opv2v_training_dataset"
+test_root =  "/path/to/opv2v_testing_dataset"
+valid_root = "/path/to/opv2v_validation_dataset"
+save_dir_train = f"/path/to/save_train_result_dir/comm_sim/{format(total_size, '.0e')}_{format(packet_size, '.0e')}_{format(maxtime, '.0e')}"
+save_dir_test = f"/path/to/save_test_result_dir/comm_sim/{format(total_size, '.0e')}_{format(packet_size, '.0e')}_{format(maxtime, '.0e')}"
+save_dir_valid = f"/path/to/save_validation_result_dir/comm_sim/{format(total_size, '.0e')}_{format(packet_size, '.0e')}_{format(maxtime, '.0e')}"
+```
+Step 3: Run 
+```python
+python simulate_traffics.py
+```
+to generete communication simulation result that can be used by generate_mask.py to generate masks to simulate packet loss. 
+
+Step 4 (optional): You can change the payload size, feature size within the simulate_traffics.py file. To use the code with custom V2V scenarios, you can also provide the custom waypoints to the "simulate" method in simulate_traffic.py. To modify propagation delay and propagation loss, you can change the topology implementation in the "simulate" method.
+
 # Download Link
 Click links below to download the data needed to generate masks for train, validate, and test sets from the [OPV2V](https://github.com/DerrickXuNu/OpenCOOD) benchmark.
 
