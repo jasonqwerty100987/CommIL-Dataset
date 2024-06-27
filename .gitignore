@@ -1,0 +1,7 @@
+*.pyc
+/ns-allinone-3.38/ns-3.38/build/
+/ns-allinone-3.38/ns-3.38/cmake-cache/
+/ns-allinone-3.38/ns-3.38/__pycache__/
+/ns-allinone-3.38/ns-3.38/.vscode/
+*.pcap
+
